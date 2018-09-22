@@ -1,0 +1,14 @@
+{
+    "name": "vendor/recognize",
+    "description": "Description of project Recognize.",
+    "authors": [
+        {
+            "name": "VOD",
+            "email": "your@email.here"
+        }
+    ],
+    "require": {},
+    "require-dev": {
+        "phing/phing": "dev-master"
+    }
+}
