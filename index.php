@@ -25,11 +25,11 @@ and open the template in the editor.
             //$refPointProb=$prrob1->readFromFile("..\\..\\other projects\\Zip Vraca magistralen\\Proekt\\cad4-with servitut.cad",0,FALSE);
             //echo $prrob1->getScriptPlines();
             
-            $city=new town(NULL);
+            $city=new Town(NULL);
             $refPointCity=$city->readFromFile("..\\VR_27_06_2016.cad",2,FALSE,$listOfCadDistricts);
-            $water=new town($refPointCity);
+            $water=new Town($refPointCity);
             $refPointWater=$water->readFromFile("..\\VOD54_tr.cad",0,TRUE,NULL);
-            $sewage=new town($refPointCity);
+            $sewage=new Town($refPointCity);
             $refPointSewage=$sewage->readFromFile("..\\KAN2005_tr.cad",0,TRUE,NULL);
             //echo $city->getScriptContours(10);
             //echo $city->getScriptPlines();

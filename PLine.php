@@ -11,7 +11,7 @@
  *
  * @author Stanislav Stanislavov
  */
-class pLine {
+class PLine {
 
     private $points, $type, $idFromCAD, $borderType, $begDate, $endDate, $elevation;
 

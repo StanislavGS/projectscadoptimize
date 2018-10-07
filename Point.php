@@ -11,7 +11,7 @@
  *
  * @author Stanislav Stanislavov
  */
-class point {
+class Point {
     private $x,$y;
     public function getX() {    return $this->x;}
     public function getY() {    return $this->y;}
@@ -40,15 +40,15 @@ class point {
         $this->y=$arr[2]+$cooDiferences->getY();
     }
     
-    public function updateWindowCorner($downLeft,&$cornerPoint) {
-        if ($cornerPoint){
-            if (($downLeft ^ $this->x>$cornerPoint->getX() )|| ($downLeft ^ $this->y>$cornerPoint->getY() )){
-                $newX=($downLeft ^ $this->x>$cornerPoint->getX() )?$this->x:$cornerPoint->getX();
-                $newY=($downLeft ^ $this->y>$cornerPoint->getY() )?$this->y:$cornerPoint->getY();
-                $cornerPoint->setXY($newX,$newY);
-            }
-        } else {
-            $cornerPoint=new point("0 $this->x $this->y");
-        }
-    }
+//    public function updateWindowCorner($downLeft,&$cornerPoint) {
+//        if ($cornerPoint){
+//            if (($downLeft ^ $this->x>$cornerPoint->getX() )|| ($downLeft ^ $this->y>$cornerPoint->getY() )){
+//                $newX=($downLeft ^ $this->x>$cornerPoint->getX() )?$this->x:$cornerPoint->getX();
+//                $newY=($downLeft ^ $this->y>$cornerPoint->getY() )?$this->y:$cornerPoint->getY();
+//                $cornerPoint->setXY($newX,$newY);
+//            }
+//        } else {
+//            $cornerPoint=new Point("0 $this->x $this->y");
+//        }
+//    }
 }

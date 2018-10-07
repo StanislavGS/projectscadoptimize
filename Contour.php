@@ -11,7 +11,7 @@
  *
  * @author Stanislav Stanislavov
  */
-class contour {
+class Contour {
 
     private $pLines, $level, $identificator, $xInsidePoint, $yInsidePoint, $begDate, $endDate;
 
