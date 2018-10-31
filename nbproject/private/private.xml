@@ -3,13 +3,13 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/Stanislav/OneDrive/Vraca%20Cikal/phpRecognizeImoti/autoload.php</file>
-            <file>file:/C:/Users/Stanislav/OneDrive/Vraca%20Cikal/phpRecognizeImoti/town.php</file>
-            <file>file:/C:/Users/Stanislav/OneDrive/Vraca%20Cikal/phpRecognizeImoti/point.php</file>
-            <file>file:/C:/Users/Stanislav/OneDrive/Vraca%20Cikal/phpRecognizeImoti/index.php</file>
-            <file>file:/C:/Users/Stanislav/OneDrive/Vraca%20Cikal/phpRecognizeImoti/listCadasterDistricts.php</file>
-            <file>file:/C:/Users/Stanislav/OneDrive/Vraca%20Cikal/phpRecognizeImoti/contour.php</file>
-            <file>file:/C:/Users/Stanislav/OneDrive/Vraca%20Cikal/phpRecognizeImoti/pLine.php</file>
+            <file>file:/D:/pcx/Stanislav/projectCADPHP/projectscadoptimize/PLine.php</file>
+            <file>file:/D:/pcx/Stanislav/projectCADPHP/projectscadoptimize/Point.php</file>
+            <file>file:/D:/pcx/Stanislav/projectCADPHP/projectscadoptimize/Text.php</file>
+            <file>file:/D:/pcx/Stanislav/projectCADPHP/projectscadoptimize/StabilizedPoint.php</file>
+            <file>file:/D:/pcx/Stanislav/projectCADPHP/projectscadoptimize/ReadStatus.php</file>
+            <file>file:/D:/pcx/Stanislav/projectCADPHP/projectscadoptimize/index.php</file>
+            <file>file:/D:/pcx/Stanislav/projectCADPHP/projectscadoptimize/Town.php</file>
         </group>
     </open-files>
 </project-private>

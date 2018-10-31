@@ -1,16 +1,5 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/**
- * Description of town
- *
- * @author Stanislav Stanislavov
- */
 class Town {
 
     private $contours, $lines, $points, $texts, $symbols;
@@ -19,32 +8,34 @@ class Town {
     public function readFile() {
         $i = func_num_args();
         if ($i < 1) {
-            throw 'Must specify file name';
+            throw new Exception('Must specify file name');
         } elseif ($i > 1) {
             $status = new ReadStatus(func_get_arg(1));
         } else {
-            $status = new ReadStatus(NULL);
+            $status = new ReadStatus(null);
         }
-        $fileName = func_get_args(0);
+        $status->setBlockType('Outside');
+        $fileName = func_get_arg(0);
         if (!($fh = @fopen($fileName, 'r'))) {
-            throw 'Cant open file ---->' . $fileName;
+            throw new Exception('Cant open file ---->' . $fileName);
         }
         while (!feof($fh)) {
             $strRow = trim(fgets($fh));
-            call_user_func('funcRead' . $status->getBlockType(), $strRow, $status);
+            $funcName='funcRead' . $status->getBlockType();
+            call_user_func(array($this,$funcName ), $strRow, $status);            
         }
     }
 
-    private function funcReadOutside($strRow, $status) {
-        if (!strcasecmp($strRow, 'HEADER', strlen('HEADER'))) {
+    private function funcReadOutside($strRow, ReadStatus $status) {
+        if (strcasecmp($strRow, 'HEADER')==0) {
             $status->setBlockType('Header');
-        } elseif (!strcasecmp($strRow, 'LAYER', strlen('LAYER'))) {
+        } elseif (strncasecmp($strRow, 'LAYER', strlen('LAYER'))==0) {
             $status->setBlockType('Layer');
             $status->setBlockName(trim(substr($strRow, strlen('LAYER'))));
-        } elseif (!strcasecmp($strRow, 'CONTROL', strlen('CONTROL'))) {
+        } elseif (!strncasecmp($strRow, 'CONTROL', strlen('CONTROL'))) {
             $status->setBlockType('Control');
             $status->setBlockName(trim(substr($strRow, strlen('CONTROL'))));
-        } elseif (!strcasecmp($strRow, 'TABLE', strlen('TABLE'))) {
+        } elseif (!strncasecmp($strRow, 'TABLE', strlen('TABLE'))) {
             $status->setBlockType('Table');
             $status->setBlockName(trim(substr($strRow, strlen('TABLE'))));
         }
@@ -54,6 +45,10 @@ class Town {
         if ($strRow == 'END_HEADER') {
             $status->setBlockType('Outside');
             return;
+        } else {
+            if (!strncmp($strRow, "REFERENCE", strlen("REFERENCE"))) {
+                $this->referencePoint = new Point($strRow);
+            }
         }
         //here must by put some code
     }
@@ -66,11 +61,12 @@ class Town {
             $status->setBlockType('Outside');
             return;
         }
-        $newObj = NULL;
+        $newObj = null;
         $fistSymb = $strRow[0];
         switch ($fistSymb) {
             case 'P':$newPoi = new StabilizedPoint($strRow);
                 $this->points[$newPoi->getNumber()] = $newPoi;
+                $status->setInsideBlockStatus(null);
                 break;
             case 'L':$newObj = new PLine($strRow);
                 $this->lines[$newObj->getIdFromCAD()] = $newObj;
@@ -81,16 +77,46 @@ class Town {
                 $status->setInsideBlockStatus($newObj);
                 break;
             case 'T':$newObj = new Text($strRow);
-                $this->texts[$newObj->getNumber()] = $newObj;
+                $this->texts[$newObj->getNum()] = $newObj;
                 $status->setInsideBlockStatus($newObj);
                 break;
             case 'S':$newObj = new Sign($strRow);
                 $this->symbols[$newObj->getNumber()] = $newObj;
+                $status->setInsideBlockStatus(null);
                 break;
-
-            default:
-                break;
+            default :
+                if ($status->getInsideBlockStatus()) {
+                    $status->setInsideBlockStatus(call_user_func(array($this, 
+                        'readLayer' . get_class($status->getInsideBlockStatus())), 
+                         $status->getInsideBlockStatus(), $strRow));
+                }
         }
+    }
+
+    function readLayerPLine(PLine $obj, string $strRow) {
+        $arr = explode(";", $strRow);
+        foreach ($arr as $value) {
+            $value = trim($value);
+            if ($value) {
+                $point = new point(trim($value));
+                $this->points[(int) preg_split("/[\s]+/", trim($value))[0]] = $point;
+                $obj->addPoint($point);
+            }
+        }
+        return $obj;
+    }
+
+    function readLayerContour(Contour $obj, $strRow) {
+        $arr = preg_split("/[\s]+/", $strRow);
+        foreach ($arr as $value) {
+            $obj->addPLine($this->lines[(int) $value]);
+        }
+        return $obj;
+    }
+
+    function readLayerText(Text $obj, $strRow) {
+        $obj->setTextWithDescription($strRow);
+        return null;
     }
 
     private function funcReadControl($strRow, ReadStatus $status) {
@@ -109,166 +135,8 @@ class Town {
         //here must by put some code
     }
 
-//    public function readFromFile($fileName, $levelLine, $localDebugMode,$listValidContours) {
-//        $isInLayer = FALSE;
-//        $isInHeader = FALSE;
-//        $headerAllreadyRead = FALSE;
-//        $currentLine = NULL;
-//        $currentContour = NULL;
-//        $referencePoint = NULL;
-//        if (!($fh = @fopen($fileName, 'r'))) {
-//            echo 'Cant open file ---->' . $fileName;
-//            return NULL;
-//        }
-//
-//        $status = 'outside';
-//        if (DEBUGMODE) {
-//            $j = 0;
-//            $isFirst=TRUE;//            echo 'isfirst=true';
-//            $downLeftPoint=NULL;
-//            $upRightPoint=null;            
-//        }
-//        while (!feof($fh)) {
-//            $strRow = trim(fgets($fh));
-//            if (!$headerAllreadyRead) {
-//                if ($isInHeader) {
-//                    if ($strRow == 'END_HEADER') {
-//                        $isInHeader = FALSE;
-//                        $headerAllreadyRead = TRUE;
-//                    } else {
-//                        if (!strncmp(trim($strRow), 'REFERENCE', strlen('REFERENCE'))) {
-//                            $arr = preg_split("/[\s]+/", $strRow);
-//                            $referencePoint = new point($strRow);
-//                            if (!$this->cooDiferences) {
-//                                $this->cooDiferences = new point("0 0 0");
-//                            } else {
-//                                $this->cooDiferences->setXY($referencePoint->getX() - $this->cooDiferences->getX(), $referencePoint->getY() - $this->cooDiferences->getY());
-//                                if (DEBUGMODE){
-//                                    //echo 'reference point -->>';var_dump($referencePoint);
-//                                    //echo 'coo diferences in setRefPoint--->>>';var_dump($this->cooDiferences);
-//                                }
-//                            }
-//                        }
-//                    }
-//                } else {
-//                    $isInHeader = (trim($strRow) == 'HEADER');
-//                }
-//            }
-//            if ($isInLayer) {
-//                if ($strRow == 'END_LAYER') {
-//                    $isInLayer = FALSE;
-//                    break;
-//                } else {
-//                    switch (substr($strRow, 0, 1)) {
-//                        case "L":
-//                            $status = 'lineToNotWrite';
-//                            $arr = preg_split("/[\s]+/", $strRow);
-//                            if ($arr[3] >= $levelLine) {
-//                                $status = 'lineToWrite';
-//                                if (DEBUGMODE) {
-//                                    //var_dump($this->lines[(int) $currentLineNumber]);
-//                                }
-//                                $currentLine = new pLine($strRow);
-//                                $currentLineNumber =$arr[2];
-//                                $this->lines[$currentLineNumber] = $currentLine;
-//                                if (DEBUGMODE && $isFirst){
-//                                    //$isFirst=FALSE;
-//                                    //var_dump($this->lines);
-//                                }
-//                                if (DEBUGMODE) {
-//                                    //var_dump($this->lines[$currentLineNumber]);
-//                                    //var_dump(count($this->lines));
-//                                    //var_dump($arr);
-//                                    //var_dump($this->lines);
-//                                    //if ($j>5) {return NULL;}
-//                                }
-//                            }
-//                            break;
-//                        case "P":
-//                            $status = 'point';
-//                            break;
-//                        case "C":
-//                            if (DEBUGMODE && $isFirst){
-//                                //$isFirst=FALSE;
-//                                //var_dump($referencePoint);
-//                                //var_dump($this->lines);
-//                            }
-//                            $arr = preg_split("/[\s]+/", $strRow);
-//                            if ($arr[1] == $levelLine && isset($listValidContours[explode(".",$arr[2])[0]])) {
-//                                $status = 'contour';
-//                                $currentContour = new contour($strRow);
-//                                $this->contours[$arr[2]] = $currentContour;
-//                            } else {
-//                                $status = 'noValidContour';
-//                            }
-//                            break;
-//                        case "E":
-//                            $status = 'outside';
-//                            break;
-//                        case "T":
-//                            $status = 'text';
-//                            break;
-//                        case "S":
-//                            $status = 'sign';
-//                            break;
-//                        default:
-//                            if ($status != 'contour' && $status != 'text' && $status != 'lineToWrite') {
-//                                $status = 'outside';
-//                            } elseif ($status == 'lineToWrite') {
-//                                $arr = explode(";", $strRow);
-//                                foreach ($arr as $value) {
-//                                    if (trim($value)) {                                        
-//                                        $point = new point(trim($value), $this->cooDiferences);
-//                                        if (DEBUGMODE){
-//                                            $point->updateWindowCorner(TRUE,$downLeftPoint);
-//                                            $point->updateWindowCorner(FALSE,$upRightPoint);
-//                                        }
-//                                        $this->points[preg_split("/[\s]+/", trim($value))[0]] = &$point;
-//                                        $currentLine->addPoint($point);                                        
-//                                    }
-//                                }
-//                            } elseif ($status == 'contour') {
-//                                $arr = preg_split("/[\s]+/", $strRow);
-//                                foreach ($arr as $value) {
-//                                    $currentContour->addPLine($this->lines[$value]);
-//                                    if (DEBUGMODE) {
-//                                        //$count=count($this->lines);
-//                                        //echo "$value($count)->>";var_dump($this->lines[$value]);                                        
-//                                    }
-//                                }
-//                            }
-//
-//                            break;
-//                    }
-//
-//                    if (DEBUGMODE) {
-//                        $j++;
-//                    }
-//                }
-//            } else {
-//                $isInLayer = (trim($strRow) == 'LAYER CADASTER');
-//            }
-//        }
-//        if (DEBUGMODE) {
-//            //echo 'reference point -->>';var_dump($referencePoint);
-//            //echo 'coo diferences--->>>';var_dump($this->cooDiferences);
-//            echo $j .' lines readed ---'. (isset($this->contours)?count($this->contours):'0').' contours readed';
-//            //var_dump($downLeftPoint);
-//            //var_dump($upRightPoint);
-//            echo "minX=".$downLeftPoint->getX()." minY=".$downLeftPoint->getY().")";
-//            echo " maxX=".$upRightPoint->getX()." maxY=".$upRightPoint->getY()."\n";
-////            foreach ($this->lines as $value) {
-////                echo "first pline\n";
-////                var_dump($value);
-////                break;
-////            }            
-//        }
-//        fclose($fh);
-//        return $referencePoint;
-//    }
-
     public function makeListContours($townPipes) {
-        $findedContours = NULL;
+        $findedContours = null;
         $numLines = count($townPipes->getLines());
         $count = (int) $numLines / 100;
         $j = 0;
@@ -296,11 +164,11 @@ class Town {
     }
 
     public function __construct($cooDiferencesInput) {
-        $this->lines = NULL;
-        $this->cooDiferences = $cooDiferencesInput ? new Point('0 ' . $cooDiferencesInput->getX() . ' ' . $cooDiferencesInput->getY()) : NULL;
+        $this->lines = null;
+        $this->cooDiferences = $cooDiferencesInput ? new Point('0 ' . $cooDiferencesInput->getX() . ' ' . $cooDiferencesInput->getY()) : null;
         //echo 'coo diferences in comstruct--->>>';var_dump($this->cooDiferences);
         //for first time here record reference point for original project
-        //if NULL are submitted reference point is first- 0,0
+        //if null are submitted reference point is first- 0,0
     }
 
     public function getLines() {
@@ -308,8 +176,11 @@ class Town {
     }
 
     //----in debug mode
+    function getContours() {
+        return $this->contours;
+    }
 
-    public function getList($objectName, $start, $lenth) {
+        public function getList($objectName, $start, $lenth) {
         $j = 0;
         $st = '';
         foreach ($this->$objectName as $value) {
