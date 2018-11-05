@@ -21,15 +21,15 @@ class Town {
         }
         while (!feof($fh)) {
             $strRow = trim(fgets($fh));
-            $funcName='funcRead' . $status->getBlockType();
-            call_user_func(array($this,$funcName ), $strRow, $status);            
+            $funcName = 'funcRead' . $status->getBlockType();
+            call_user_func(array($this, $funcName), $strRow, $status);
         }
     }
 
     private function funcReadOutside($strRow, ReadStatus $status) {
-        if (strcasecmp($strRow, 'HEADER')==0) {
+        if (strcasecmp($strRow, 'HEADER') == 0) {
             $status->setBlockType('Header');
-        } elseif (strncasecmp($strRow, 'LAYER', strlen('LAYER'))==0) {
+        } elseif (strncasecmp($strRow, 'LAYER', strlen('LAYER')) == 0) {
             $status->setBlockType('Layer');
             $status->setBlockName(trim(substr($strRow, strlen('LAYER'))));
         } elseif (!strncasecmp($strRow, 'CONTROL', strlen('CONTROL'))) {
@@ -81,14 +81,13 @@ class Town {
                 $status->setInsideBlockStatus($newObj);
                 break;
             case 'S':$newObj = new Sign($strRow);
-                $this->symbols[$newObj->getNumber()] = $newObj;
+                $this->symbols[$newObj->getNum()] = $newObj;
                 $status->setInsideBlockStatus(null);
                 break;
             default :
                 if ($status->getInsideBlockStatus()) {
-                    $status->setInsideBlockStatus(call_user_func(array($this, 
-                        'readLayer' . get_class($status->getInsideBlockStatus())), 
-                         $status->getInsideBlockStatus(), $strRow));
+                    $status->setInsideBlockStatus(call_user_func(array($this,
+                        'readLayer' . get_class($status->getInsideBlockStatus())), $status->getInsideBlockStatus(), $strRow));
                 }
         }
     }
@@ -180,7 +179,7 @@ class Town {
         return $this->contours;
     }
 
-        public function getList($objectName, $start, $lenth) {
+    public function getList($objectName, $start, $lenth) {
         $j = 0;
         $st = '';
         foreach ($this->$objectName as $value) {
@@ -194,7 +193,7 @@ class Town {
         return $st;
     }
 
-    public function getScriptPlines() {
+    private function getScriptPlines() {
         $st = '';
         foreach ($this->lines as $value) {
             $st .= $value->getScriptPline() . "\n";
@@ -202,12 +201,33 @@ class Town {
         return $st;
     }
 
-    public function getScriptContours($height) {
+    private function getScriptContours($height) {
         $st = '';
         foreach ($this->contours as $value) {
             $st .= $value->getScript($height) . "\n";
         }
         return $st;
+    }
+
+    private function getScriptTexts() {
+        $st = '';
+        foreach ($this->texts as $value) {
+            $st .= $value->getScript() . PHP_EOL;
+        }
+        return $st;
+    }
+
+    private function getScriptSigns() {
+        $st = '';
+        foreach ($this->symbols as $value) {
+            $st .= $value->getScript() . PHP_EOL;
+        }
+        return $st;
+    }
+
+    public function getScriptDraw($scale) {
+        return $this->getScriptPlines() . $this->getScriptContours($scale) .
+                $this->getScriptTexts() . $this->getScriptSigns();
     }
 
 }

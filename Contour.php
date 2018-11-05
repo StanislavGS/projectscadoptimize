@@ -1,16 +1,4 @@
 <?php
-
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/**
- * Description of contour
- *
- * @author Stanislav Stanislavov
- */
 class Contour {
 
     private $pLines, $level, $identificator, $xInsidePoint, $yInsidePoint, $begDate, $endDate;
@@ -28,8 +16,6 @@ class Contour {
     }
 
     function isInContour($npLine) {
-        //echo $this->identificator."\n";///debug
-        //if ($this->identificator=="1015.407"){$debug1=TRUE;var_dump($this);var_dump($npLine);}///debug
         if ($this->isPointInContour($npLine->getFirstPoint())) {
             return TRUE;
         }

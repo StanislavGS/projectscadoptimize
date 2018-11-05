@@ -5,11 +5,13 @@
         <group>
             <file>file:/D:/pcx/Stanislav/projectCADPHP/projectscadoptimize/PLine.php</file>
             <file>file:/D:/pcx/Stanislav/projectCADPHP/projectscadoptimize/Point.php</file>
+            <file>file:/D:/pcx/Stanislav/projectCADPHP/projectscadoptimize/Sign.php</file>
             <file>file:/D:/pcx/Stanislav/projectCADPHP/projectscadoptimize/Text.php</file>
             <file>file:/D:/pcx/Stanislav/projectCADPHP/projectscadoptimize/StabilizedPoint.php</file>
             <file>file:/D:/pcx/Stanislav/projectCADPHP/projectscadoptimize/ReadStatus.php</file>
             <file>file:/D:/pcx/Stanislav/projectCADPHP/projectscadoptimize/index.php</file>
             <file>file:/D:/pcx/Stanislav/projectCADPHP/projectscadoptimize/Town.php</file>
+            <file>file:/D:/pcx/Stanislav/projectCADPHP/projectscadoptimize/Contour.php</file>
         </group>
     </open-files>
 </project-private>

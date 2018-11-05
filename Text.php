@@ -12,7 +12,7 @@ class Text {
             case 3:$this->num = (int) $arr[2];
             case 4:$this->x = (double) $arr[3];
             case 5:$this->y = (double) $arr[4];
-            case 6:$this->x = (float) $arr[5];
+            case 6:$this->h = (float) $arr[5];
             case 7:$this->begDate = $arr[6];
             case 8:$this->endDate = $arr[7];
             case 9:$this->rot = (float) $arr[8];
@@ -23,10 +23,15 @@ class Text {
     function setTextWithDescription($textWithDescription) {
         $this->textWithDescription = $textWithDescription;
     }
+
     function getNum() {
         return $this->num;
     }
 
+    public function getScript() {
+        return "-text\n$this->yInsidePoint,$this->xInsidePoint\n$this->h\n"
+                . "$this->rot\n$this->textWithDescription\n";
+    }
 
 //<T t n х у h b d r j>, където: 
 //<Т> е символ, който предхожда данни за текст; 

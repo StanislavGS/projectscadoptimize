@@ -36,8 +36,8 @@ if (!php_sapi_name() == "cli") {
 //            $sewage=new Town($refPointCity);
 //            $refPointSewage=$sewage->readFromFile("..\\KAN2005_tr.cad",0,TRUE,NULL);
         //var_dump($city->getLines());
-        var_dump($city->getContours());
-        echo $city->getScriptContours(10);
+        //var_dump($city->getContours());
+        echo $city->getScriptDraw(1);
         //echo $city->getScriptPlines();
 //            echo $city->makeListContours($water);
 //            echo $city->makeListContours($sewage);

@@ -1,26 +1,9 @@
 <?php
-
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/**
- * Description of pLine
- *
- * @author Stanislav Stanislavov
- */
 class PLine {
 
     private $points, $type, $idFromCAD, $borderType, $begDate, $endDate, $elevation;
 
     function crossLines($l1p1, $l1p2, $l2p1, $l2p2) {
-        //echo '1-1-'.$l1p1->getX() .'--'.$l1p1->getY()."\n";
-        //echo '1-2-'.$l1p2->getX() .'--'.$l1p2->getY()."\n";
-        //echo '2-1-'.$l2p1->getX() .'--'.$l2p1->getY()."\n";
-        //echo '2-2-'.$l2p2->getX() .'--'.$l2p2->getY()."\n";
-        //echo max($l2p1->getX(), $l2p2->getX()).'--'.$l2p1->getX().'-'.$l2p2->getX()."\n";
         if (max($l1p1->getX(), $l1p2->getX()) < min($l2p1->getX(), $l2p2->getX()) ||
                 max($l2p1->getX(), $l2p2->getX()) < min($l1p1->getX(), $l1p2->getX()) ||
                 max($l1p1->getY(), $l1p2->getY()) < min($l2p1->getY(), $l2p2->getY()) ||
@@ -29,14 +12,12 @@ class PLine {
         }
         if (abs($l1p1->getX() - $l1p2->getX()) < ACCURANCY) {
             if (abs($l2p1->getX() - $l2p2->getX()) < ACCURANCY) {
-                //echo '2 vertical line cross';///debug
                 return (abs($l1p1->getY() - $l2p2->getY()) < ACCURANCY);
             }
             $a = ($l2p2->getY() - $l2p1->getY()) / ($l2p2->getX() - $l2p1->getX());
             $b = $l2p1->getY() - $a * $l2p1->getX();
             $x = 0.5 * ($l1p1->getX() + $l1p2->getX());
             $y = $a * $x + $b;
-            //if (($y - $l2p1->getY()) * ($y - $l2p2->getY()) <= 0){                echo '1 vertical line cross';}///debug
             return ($y - $l2p1->getY()) * ($y - $l2p2->getY()) <= 0;
         }
         $a = ($l1p2->getY() - $l1p1->getY()) / ($l1p2->getX() - $l1p1->getX());
@@ -50,8 +31,7 @@ class PLine {
         
         
         if (($xIntersect-$l1p1->getX())*($xIntersect-$l1p2->getX())<0 &&
-                ($xIntersect-$l2p1->getX())*($xIntersect-$l2p2->getX())<0){
-            //echo 'cros lines';///debug
+                ($xIntersect-$l2p1->getX())*($xIntersect-$l2p2->getX())<0){            
         }
         return ($xIntersect-$l1p1->getX())*($xIntersect-$l1p2->getX())<0 &&
                 ($xIntersect-$l2p1->getX())*($xIntersect-$l2p2->getX())<0;
@@ -106,7 +86,6 @@ class PLine {
         if (isset($arr[5])) {
             $this->elevation = $arr[5];
         }
-        //$this->points[0]=NULL;
     }
 
     public function getFirstPoint() {
@@ -124,12 +103,16 @@ class PLine {
     public function getScriptPline() {
         $st='pline ';
         foreach ($this->points as $value) {
-            $st.=$value->getY().','.$value->getX()."\n";
+            $st.=$value->getY().','.$value->getX().PHP_EOL;
         }
         return $st;
     }
     function getIdFromCAD() {
         return $this->idFromCAD;
+    }
+
+    function getBorderType() {
+        return $this->borderType;
     }
 
 
